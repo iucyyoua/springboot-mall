@@ -13,7 +13,7 @@ public class Product {
     private Integer price;
     private Integer stock;
     private String description;
-    private Date createDate;
+    private Date createdDate;
     private Date lastModifiedDate;
 
     public Integer getProductId() {
@@ -72,12 +72,12 @@ public class Product {
         this.description = description;
     }
 
-    public Date getCreateDate() {
-        return createDate;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
     public Date getLastModifiedDate() {
