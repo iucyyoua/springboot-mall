@@ -57,4 +57,17 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(updateProduct);
     }
 
+
+    @DeleteMapping("/products/{productId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer productId){
+
+        productService.deleteProductById(productId);
+
+        //只要確定該商品消失不見，就表示刪除功能是成功的，不需要加上not found404
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+
+    }
+
+
 }
