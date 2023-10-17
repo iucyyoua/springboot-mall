@@ -8,11 +8,16 @@ import com.lucywu.springbootmall.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
+
+@Validated //加了之後Max及Min註解才會生效
 @RestController
 public class ProductController {
 
@@ -28,13 +33,19 @@ public class ProductController {
             @RequestParam(required = false) String search,
             //排序Sorting
             @RequestParam(defaultValue = "created_date") String orderBy, //最新上架日期
-            @RequestParam(defaultValue = "desc") String sort  //由大到小
+            @RequestParam(defaultValue = "desc") String sort,//由大到小
+
+            //分頁
+            @RequestParam(defaultValue = "5") @Max(1000) @Min(0) Integer limit,  //取得幾筆商品數據
+            @RequestParam(defaultValue = "0") @Min(0) Integer offset  //跳過多少筆數據，驗證前端來的值：@Min(0) 為了避免負數
     ) {
         ProductQueryParams productQueryParams = new ProductQueryParams();
         productQueryParams.setCategory(category);
         productQueryParams.setSearch(search);
         productQueryParams.setOrderBy(orderBy);
         productQueryParams.setSort(sort);
+        productQueryParams.setLimit(limit);
+        productQueryParams.setOffset(offset);
 
     List<Product> productList = productService.getProducts(productQueryParams);
 

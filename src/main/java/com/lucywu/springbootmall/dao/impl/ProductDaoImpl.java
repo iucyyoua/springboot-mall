@@ -32,8 +32,10 @@ public class ProductDaoImpl implements ProductDao {
                 "FROM product WHERE 1=1 ";
 
         Map<String,Object> map = new HashMap<>();
-//AND前面一定要加上空白鍵
+        //AND前面一定要加上空白鍵
         //檢查前端傳來的值是否為null，如果是null，才需要下方的SQL語句
+
+        //查詢條件
         if(productQueryParams.getCategory() != null){
 
             sql = sql + " AND category =:category";
@@ -51,7 +53,14 @@ public class ProductDaoImpl implements ProductDao {
         //ORDER只能用字串拼接
         //已為兩個參數加上了預設值，所以預設不會是null
         //SQL語句拼接時，前跟後一定要留空白，才不會都黏在一起
+
+        //排序
         sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
+
+        //分頁
+        sql = sql + " LIMIT :limit OFFSET :offset";
+        map.put("limit",productQueryParams.getLimit());
+        map.put("offset",productQueryParams.getOffset());
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 
