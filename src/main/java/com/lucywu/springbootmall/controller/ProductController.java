@@ -23,12 +23,18 @@ public class ProductController {
     //required = false 不傳值也不會爆錯，賦予null，代表不是必填，是選填
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getProducts(
+            //查詢條件Filtering
             @RequestParam(required = false) ProductCategory category,
-            @RequestParam(required = false) String search )
-    {
+            @RequestParam(required = false) String search,
+            //排序Sorting
+            @RequestParam(defaultValue = "created_date") String orderBy, //最新上架日期
+            @RequestParam(defaultValue = "desc") String sort  //由大到小
+    ) {
         ProductQueryParams productQueryParams = new ProductQueryParams();
         productQueryParams.setCategory(category);
         productQueryParams.setSearch(search);
+        productQueryParams.setOrderBy(orderBy);
+        productQueryParams.setSort(sort);
 
     List<Product> productList = productService.getProducts(productQueryParams);
 

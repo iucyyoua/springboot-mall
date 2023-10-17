@@ -48,6 +48,10 @@ public class ProductDaoImpl implements ProductDao {
             map.put("search","%" + productQueryParams.getSearch() + "%");
         }
 
+        //ORDER只能用字串拼接
+        //已為兩個參數加上了預設值，所以預設不會是null
+        //SQL語句拼接時，前跟後一定要留空白，才不會都黏在一起
+        sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 
@@ -108,8 +112,7 @@ public class ProductDaoImpl implements ProductDao {
 
         String sql = "UPDATE product SET product_name = :productName, category = :category, image_url = :imageUrl, " +
                 "price = :price, stock = :stock, description = :description, last_modified_date = :lastModifiedDate " +
-                "WHERE product_id = :productId";
-
+                " WHERE product_id = :productId";
 
         Map<String,Object> map = new HashMap<>();
         map.put("productId",productId);
