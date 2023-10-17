@@ -1,5 +1,6 @@
 package com.lucywu.springbootmall.service.impl;
 
+import com.lucywu.springbootmall.constant.ProductCategory;
 import com.lucywu.springbootmall.dao.ProductDao;
 import com.lucywu.springbootmall.dto.ProductRequest;
 import com.lucywu.springbootmall.model.Product;
@@ -7,8 +8,15 @@ import com.lucywu.springbootmall.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class ProductServiceImpl implements ProductService {
+
+    @Override
+    public List<Product> getProducts(ProductCategory category,String search) {
+        return productDao.getProducts(category,search);
+    }
 
     @Autowired
     private ProductDao productDao;

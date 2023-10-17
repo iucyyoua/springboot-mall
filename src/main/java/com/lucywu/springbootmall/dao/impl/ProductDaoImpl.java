@@ -1,5 +1,6 @@
 package com.lucywu.springbootmall.dao.impl;
 
+import com.lucywu.springbootmall.constant.ProductCategory;
 import com.lucywu.springbootmall.dao.ProductDao;
 import com.lucywu.springbootmall.dto.ProductRequest;
 import com.lucywu.springbootmall.model.Product;
@@ -22,17 +23,49 @@ public class ProductDaoImpl implements ProductDao {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    //where 1=1 可以更簡單的讓後面的查詢語句做拼接
+    @Override
+    public List<Product> getProducts(ProductCategory category,String search) {
+        String sql = "SELECT product_id,product_name, category, image_url, price, stock, description, " +
+                "created_date, last_modified_date " +
+                "FROM product WHERE 1=1 ";
+
+        Map<String,Object> map = new HashMap<>();
+//AND前面一定要加上空白鍵
+        //檢查前端傳來的值是否為null，如果是null，才需要下方的SQL語句
+        if(category != null){
+
+            sql = sql + " AND category =:category";
+            map.put("category", category.name());
+
+        }
+
+        if (search != null){
+
+            sql = sql + " AND product_name LIKE :search";
+            //模糊查詢的百分比一定要寫在map的值裡面，不可寫在上面sql裡>>JdbcTemplate的限制
+            map.put("search","%" + search + "%");
+        }
+
+
+        List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
+
+        return productList;
+    }
+
     @Override
     public Product getProductById(Integer productId) {
 
-        String sql = "select product_id,product_name, category, image_url, price, stock, description, " +
+        String sql = "SELECT product_id,product_name, category, image_url, price, stock, description, " +
                 "created_date, last_modified_date " +
-                "from product where product_id =:productId";
+                "FROM product WHERE product_id =:productId";
         Map<String,Object> map = new HashMap<>();
         map.put("productId",productId);
 
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
+
 
        if (productList.size() > 0 ){
            return productList.get(0);

@@ -1,5 +1,6 @@
 package com.lucywu.springbootmall.controller;
 
+import com.lucywu.springbootmall.constant.ProductCategory;
 import com.lucywu.springbootmall.dto.ProductRequest;
 import com.lucywu.springbootmall.model.Product;
 import com.lucywu.springbootmall.service.ProductService;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class ProductController {
@@ -16,7 +18,20 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    //查詢商品列表
+    //required = false 不傳值也不會爆錯，賦予null，代表不是必填，是選填
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getProducts(
+            @RequestParam(required = false) ProductCategory category,
+            @RequestParam(required = false) String search )
+    {
 
+    List<Product> productList = productService.getProducts(category,search);
+
+    return ResponseEntity.status(HttpStatus.OK).body(productList);
+    }
+
+    //查詢商品中的某一個商品
     @GetMapping("/products/{productId}")
     public ResponseEntity<Product> getProduct(@PathVariable Integer productId){
         Product product = productService.getProductById(productId);
@@ -66,8 +81,6 @@ public class ProductController {
         //只要確定該商品消失不見，就表示刪除功能是成功的，不需要加上not found404
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
-
     }
-
 
 }
