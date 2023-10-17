@@ -1,6 +1,7 @@
 package com.lucywu.springbootmall.controller;
 
 import com.lucywu.springbootmall.constant.ProductCategory;
+import com.lucywu.springbootmall.dao.ProductQueryParams;
 import com.lucywu.springbootmall.dto.ProductRequest;
 import com.lucywu.springbootmall.model.Product;
 import com.lucywu.springbootmall.service.ProductService;
@@ -25,8 +26,11 @@ public class ProductController {
             @RequestParam(required = false) ProductCategory category,
             @RequestParam(required = false) String search )
     {
+        ProductQueryParams productQueryParams = new ProductQueryParams();
+        productQueryParams.setCategory(category);
+        productQueryParams.setSearch(search);
 
-    List<Product> productList = productService.getProducts(category,search);
+    List<Product> productList = productService.getProducts(productQueryParams);
 
     return ResponseEntity.status(HttpStatus.OK).body(productList);
     }

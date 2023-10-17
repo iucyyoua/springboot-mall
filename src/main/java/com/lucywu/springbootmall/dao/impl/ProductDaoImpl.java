@@ -1,7 +1,7 @@
 package com.lucywu.springbootmall.dao.impl;
 
-import com.lucywu.springbootmall.constant.ProductCategory;
 import com.lucywu.springbootmall.dao.ProductDao;
+import com.lucywu.springbootmall.dao.ProductQueryParams;
 import com.lucywu.springbootmall.dto.ProductRequest;
 import com.lucywu.springbootmall.model.Product;
 import com.lucywu.springbootmall.rowmapper.ProductRowMapper;
@@ -26,7 +26,7 @@ public class ProductDaoImpl implements ProductDao {
 
     //where 1=1 可以更簡單的讓後面的查詢語句做拼接
     @Override
-    public List<Product> getProducts(ProductCategory category,String search) {
+    public List<Product> getProducts(ProductQueryParams productQueryParams) {
         String sql = "SELECT product_id,product_name, category, image_url, price, stock, description, " +
                 "created_date, last_modified_date " +
                 "FROM product WHERE 1=1 ";
@@ -34,18 +34,18 @@ public class ProductDaoImpl implements ProductDao {
         Map<String,Object> map = new HashMap<>();
 //AND前面一定要加上空白鍵
         //檢查前端傳來的值是否為null，如果是null，才需要下方的SQL語句
-        if(category != null){
+        if(productQueryParams.getCategory() != null){
 
             sql = sql + " AND category =:category";
-            map.put("category", category.name());
+            map.put("category", productQueryParams.getCategory().name());
 
         }
 
-        if (search != null){
+        if (productQueryParams.getSearch() != null){
 
             sql = sql + " AND product_name LIKE :search";
             //模糊查詢的百分比一定要寫在map的值裡面，不可寫在上面sql裡>>JdbcTemplate的限制
-            map.put("search","%" + search + "%");
+            map.put("search","%" + productQueryParams.getSearch() + "%");
         }
 
 
