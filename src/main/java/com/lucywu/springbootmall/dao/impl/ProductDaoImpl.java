@@ -33,19 +33,7 @@ public class ProductDaoImpl implements ProductDao {
         //檢查前端傳來的值是否為null，如果是null，才需要下方的SQL語句
 
         //查詢條件
-        if(productQueryParams.getCategory() != null){
-
-            sql = sql + " AND category =:category";
-            map.put("category", productQueryParams.getCategory().name());
-
-        }
-
-        if (productQueryParams.getSearch() != null){
-
-            sql = sql + " AND product_name LIKE :search";
-            //模糊查詢的百分比一定要寫在map的值裡面，不可寫在上面sql裡>>JdbcTemplate的限制
-            map.put("search","%" + productQueryParams.getSearch() + "%");
-        }
+        sql = addfilteringSql(sql, map, productQueryParams);
 
         //queryForObject：能將count的值轉換成Integer類型
         Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
@@ -64,19 +52,8 @@ public class ProductDaoImpl implements ProductDao {
         //檢查前端傳來的值是否為null，如果是null，才需要下方的SQL語句
 
         //查詢條件
-        if(productQueryParams.getCategory() != null){
+        sql = addfilteringSql(sql, map, productQueryParams);
 
-            sql = sql + " AND category =:category";
-            map.put("category", productQueryParams.getCategory().name());
-
-        }
-
-        if (productQueryParams.getSearch() != null){
-
-            sql = sql + " AND product_name LIKE :search";
-            //模糊查詢的百分比一定要寫在map的值裡面，不可寫在上面sql裡>>JdbcTemplate的限制
-            map.put("search","%" + productQueryParams.getSearch() + "%");
-        }
 
         //ORDER只能用字串拼接
         //已為兩個參數加上了預設值，所以預設不會是null
@@ -175,5 +152,25 @@ public class ProductDaoImpl implements ProductDao {
 
         namedParameterJdbcTemplate.update(sql,map);
 
+    }
+
+    //提煉程式實，建議用private方法，就比較不會影響其他程式
+    private String addfilteringSql(String sql,Map<String,Object > map,ProductQueryParams productQueryParams){
+        //查詢條件
+        if(productQueryParams.getCategory() != null){
+
+            sql = sql + " AND category =:category";
+            map.put("category", productQueryParams.getCategory().name());
+
+        }
+
+        if (productQueryParams.getSearch() != null){
+
+            sql = sql + " AND product_name LIKE :search";
+            //模糊查詢的百分比一定要寫在map的值裡面，不可寫在上面sql裡>>JdbcTemplate的限制
+            map.put("search","%" + productQueryParams.getSearch() + "%");
+        }
+
+        return sql;
     }
 }
