@@ -5,6 +5,7 @@ import com.lucywu.springbootmall.dao.ProductQueryParams;
 import com.lucywu.springbootmall.dto.ProductRequest;
 import com.lucywu.springbootmall.model.Product;
 import com.lucywu.springbootmall.service.ProductService;
+import com.lucywu.springbootmall.util.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class ProductController {
     //查詢商品列表
     //required = false 不傳值也不會爆錯，賦予null，代表不是必填，是選填
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
             //查詢條件Filtering
             @RequestParam(required = false) ProductCategory category,
             @RequestParam(required = false) String search,
@@ -47,9 +48,19 @@ public class ProductController {
         productQueryParams.setLimit(limit);
         productQueryParams.setOffset(offset);
 
-    List<Product> productList = productService.getProducts(productQueryParams);
+        //取得Product List
+        List<Product> productList = productService.getProducts(productQueryParams);
 
-    return ResponseEntity.status(HttpStatus.OK).body(productList);
+        //取得Product 總數
+        Integer total = productService.countProduct(productQueryParams);
+
+        Page<Product> page = new Page<>();
+        page.setLimit(limit);
+        page.setOffset(offset);
+        page.setTotal(total);
+        page.setResults(productList);
+
+        return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
     //查詢商品中的某一個商品

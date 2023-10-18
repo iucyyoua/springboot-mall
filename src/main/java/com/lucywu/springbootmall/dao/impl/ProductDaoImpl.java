@@ -24,6 +24,34 @@ public class ProductDaoImpl implements ProductDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    @Override
+    public Integer countProduct(ProductQueryParams productQueryParams) {
+        String sql = "SELECT count(*) FROM product WHERE 1=1";
+
+        Map<String,Object> map = new HashMap<>();
+        //AND前面一定要加上空白鍵
+        //檢查前端傳來的值是否為null，如果是null，才需要下方的SQL語句
+
+        //查詢條件
+        if(productQueryParams.getCategory() != null){
+
+            sql = sql + " AND category =:category";
+            map.put("category", productQueryParams.getCategory().name());
+
+        }
+
+        if (productQueryParams.getSearch() != null){
+
+            sql = sql + " AND product_name LIKE :search";
+            //模糊查詢的百分比一定要寫在map的值裡面，不可寫在上面sql裡>>JdbcTemplate的限制
+            map.put("search","%" + productQueryParams.getSearch() + "%");
+        }
+
+        //queryForObject：能將count的值轉換成Integer類型
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+        return total;
+    }
+
     //where 1=1 可以更簡單的讓後面的查詢語句做拼接
     @Override
     public List<Product> getProducts(ProductQueryParams productQueryParams) {
